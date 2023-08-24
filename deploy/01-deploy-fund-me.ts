@@ -1,4 +1,4 @@
-import "hardhat";
+import { network } from "hardhat";
 //main
 //calling for the main function
 
