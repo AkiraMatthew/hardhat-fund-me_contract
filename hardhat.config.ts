@@ -15,6 +15,7 @@ const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "key";
 
 const config: HardhatUserConfig = {
     solidity: "0.8.8",
+    defaultNetwork: "hardhat",
     networks: {
         sepolia: {
             url: SEPOLIA_RPC_URL,
