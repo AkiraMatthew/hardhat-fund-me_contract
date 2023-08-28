@@ -12,19 +12,27 @@
 // or
 
 import { network } from "hardhat";
-import { networkConfig } from "../helper-hardhat-config";
+import { developmentChains, networkConfig } from "../helper-hardhat-config";
 
-export default async ({ getNamedAccounts, deployments }) => {
-    const { deploy, log } = deployments;
+const deployFundMe = async ({ getNamedAccounts, deployments }) => {
+    const { deploy, log, get } = deployments;
     const { deployer } = await getNamedAccounts();
-    const chainId: number = network.config.chainId;
+    const chainId = <number>network.config.chainId;
 
     // if chainId is X use address Y
     // if chainId is Z use address A
 
-    const ethUsdPriceFeedAddress: string =
-        networkConfig[chainId]["ethUsdPricefeed"];
-
+    // const ethUsdPriceFeedAddress: string = networkConfig[chainId]["ethUsdPricefeed"];
+    let ethUsdPriceFeedAddress: string;
+    if (developmentChains.includes(network.name)) {
+        // getting the most recent deployment
+        const ethUsdAggregator = await get("MockV3Aggregator");
+        ethUsdPriceFeedAddress = ethUsdAggregator.address;
+    } else {
+        // if not on a development chain
+        const ethUsdPriceFeedAddress: string =
+            networkConfig[chainId]["ethUsdPricefeed"];
+    }
     // if the contract doesn't exist, we deploy a minimal version of
     // for our local testing
 
@@ -37,4 +45,9 @@ export default async ({ getNamedAccounts, deployments }) => {
         ], // put price feed address
         log: true,
     });
+    log(`FundMe deployed at ${fundMe.address}`);
+    log("-----------------------------------------------");
 };
+
+export default deployFundMe;
+deployFundMe.tags = ["all", "mocks"];

@@ -19,4 +19,9 @@ const networkConfig: networkConfigInfo = {
     // 31337
 };
 
-export { networkConfig };
+// defining the chains for testing/mocking
+const developmentChains = ["hardhat", "localhost"];
+const DECIMALS = 8;
+const INITIAL_ANSWER = 200000000;
+
+export { networkConfig, developmentChains, DECIMALS, INITIAL_ANSWER };
