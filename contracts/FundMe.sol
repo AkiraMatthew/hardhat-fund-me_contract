@@ -31,9 +31,12 @@ contract FundMe {
 
     // 444 gas immutable
     // 2,500 gas non-immutable
-    constructor() {
+    AggregatorV3Interface public priceFeed;
+
+    constructor(address priceFeedAddress) {
         //whoever who deploys the contract
         i_owner = msg.sender;
+        priceFeed = AggregatorV3Interface(priceFeedAddress);
     }
 
     // Limit tinkering / triaging to 20 minutes to 20 min
@@ -48,8 +51,8 @@ contract FundMe {
         // msg.value is the first parameter to be considered by a library
         // so when using a library, insted of using getConversionRate(msg.value) we use msg.value.getConversionRate();
         require(
-            msg.value.getConversionRate() >= MINIMUM_USD,
-            "Didn't send enough"
+            msg.value.getConversionRate(priceFeed) >= MINIMUM_USD,
+            "You need to spend more ETH"
         );
         funders.push(msg.sender); // -> sender is the address of however calls the function
         //here we can see
