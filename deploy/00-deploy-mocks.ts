@@ -14,8 +14,8 @@ const deployMocks = async ({ getNamedAccounts, deployments }) => {
     // if we're in a local development networks, we need to deploy mocks!
     if (developmentChains.includes(network.name)) {
         log("Local network detected! Deploying mocks...");
-        await deploy("MockV3Agreggator", {
-            contract: "MockV3Agreggator",
+        await deploy("MockV3Aggregator", {
+            contract: "MockV3Aggregator",
             from: deployer,
             log: true,
             args: [DECIMALS, INITIAL_ANSWER],

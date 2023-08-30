@@ -50,4 +50,4 @@ const deployFundMe = async ({ getNamedAccounts, deployments }) => {
 };
 
 export default deployFundMe;
-deployFundMe.tags = ["all", "mocks"];
+deployFundMe.tags = ["all", "fundme"];

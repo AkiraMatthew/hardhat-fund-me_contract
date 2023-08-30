@@ -36,6 +36,10 @@ declare module "hardhat/types/runtime" {
       name: "FundMe",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.FundMe__factory>;
+    getContractFactory(
+      name: "MockV3Aggregator",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.MockV3Aggregator__factory>;
 
     getContractAt(
       name: "AggregatorInterface",
@@ -67,6 +71,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.FundMe>;
+    getContractAt(
+      name: "MockV3Aggregator",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.MockV3Aggregator>;
 
     // default types
     getContractFactory(
