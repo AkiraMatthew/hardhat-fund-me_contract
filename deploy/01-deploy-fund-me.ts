@@ -13,7 +13,9 @@
 
 import { network } from "hardhat";
 import { developmentChains, networkConfig } from "../helper-hardhat-config";
+import verify from "../utils/verify";
 
+let ethUsdPriceFeedAddress: string;
 const deployFundMe = async ({ getNamedAccounts, deployments }) => {
     const { deploy, log, get } = deployments;
     const { deployer } = await getNamedAccounts();
@@ -23,7 +25,6 @@ const deployFundMe = async ({ getNamedAccounts, deployments }) => {
     // if chainId is Z use address A
 
     // const ethUsdPriceFeedAddress: string = networkConfig[chainId]["ethUsdPricefeed"];
-    let ethUsdPriceFeedAddress: string;
     if (developmentChains.includes(network.name)) {
         // getting the most recent deployment
         const ethUsdAggregator = await get("MockV3Aggregator");
@@ -38,15 +39,20 @@ const deployFundMe = async ({ getNamedAccounts, deployments }) => {
 
     // what happens when we want to change chains?
     // when going for localhost or hardhat network we want to use a mock
+    const args = [ethUsdPriceFeedAddress];
     const fundMe = await deploy("FundMe", {
         from: deployer,
-        args: [
-            /* address? */
-        ], // put price feed address
+        args: args, // put price feed address
         log: true,
     });
     log(`FundMe deployed at ${fundMe.address}`);
     log("-----------------------------------------------");
+    if (
+        !developmentChains.includes(network.name) &&
+        process.env.ETHERSCAN_API_KEY
+    ) {
+        await verify(fundMe.address, args);
+    }
 };
 
 export default deployFundMe;
