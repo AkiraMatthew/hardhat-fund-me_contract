@@ -44,7 +44,7 @@ const deployFundMe = async ({ getNamedAccounts, deployments }) => {
         from: deployer,
         args: args, // put price feed address
         log: true,
-        waitConfirmations: network.config.blockConfirmations || 1,
+        //waitConfirmations: network.config.blockConfirmations || 1,
     });
     log(`FundMe deployed at ${fundMe.address}`);
     log("-----------------------------------------------");

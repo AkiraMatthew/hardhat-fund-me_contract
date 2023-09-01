@@ -25,7 +25,7 @@ const config: HardhatUserConfig = {
             url: SEPOLIA_RPC_URL,
             accounts: [PRIVATE_KEY],
             chainId: 11155111,
-            blockConfirmations: 6,
+            //blockConfirmations: 6,
         },
         localhost: {
             url: "http://127.0.0.1:8545/",
