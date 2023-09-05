@@ -15,7 +15,6 @@ import { network } from "hardhat";
 import { developmentChains, networkConfig } from "../helper-hardhat-config";
 import verify from "../utils/verify";
 
-let ethUsdPriceFeedAddress: string;
 const deployFundMe = async ({ getNamedAccounts, deployments }) => {
     const { deploy, log, get } = deployments;
     const { deployer } = await getNamedAccounts();
@@ -24,15 +23,17 @@ const deployFundMe = async ({ getNamedAccounts, deployments }) => {
     // if chainId is X use address Y
     // if chainId is Z use address A
 
+    let ethUsdPriceFeedAddress!: string;
     // const ethUsdPriceFeedAddress: string = networkConfig[chainId]["ethUsdPricefeed"];
     if (developmentChains.includes(network.name)) {
-        // getting the most recent deployment
+        // For development chains, use a mock aggregator address
         const ethUsdAggregator = await get("MockV3Aggregator");
         ethUsdPriceFeedAddress = ethUsdAggregator.address;
+        console.log("Using MockV3Aggregator address:", ethUsdPriceFeedAddress);
     } else {
-        // if not on a development chain
-        const ethUsdPriceFeedAddress: string =
-            networkConfig[chainId]["ethUsdPricefeed"];
+        // For other chains, use the configured price feed address
+        ethUsdPriceFeedAddress = networkConfig[chainId]["ethUsdPricefeed"];
+        console.log("Using networkConfig address:", ethUsdPriceFeedAddress);
     }
     // if the contract doesn't exist, we deploy a minimal version of
     // for our local testing

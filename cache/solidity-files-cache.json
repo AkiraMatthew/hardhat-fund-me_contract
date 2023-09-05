@@ -173,6 +173,50 @@
       ],
       "artifacts": []
     },
+    "/home/akira/development/blockchain/hh-fcc/hardhat-fund-me-fcc/node_modules/@chainlink/contracts/src/v0.6/tests/MockV3Aggregator.sol": {
+      "lastModificationDate": 1692888705615,
+      "contentHash": "b1f27d8f04303e8c78cd057685d883f6",
+      "sourceName": "@chainlink/contracts/src/v0.6/tests/MockV3Aggregator.sol",
+      "solcConfig": {
+        "version": "0.6.6",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "devdoc",
+                "userdoc",
+                "storageLayout",
+                "evm.gasEstimates"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "metadata": {
+            "useLiteralContent": true
+          }
+        }
+      },
+      "imports": [
+        "../interfaces/AggregatorV2V3Interface.sol"
+      ],
+      "versionPragmas": [
+        "^0.6.0"
+      ],
+      "artifacts": [
+        "MockV3Aggregator"
+      ]
+    },
     "/home/akira/development/blockchain/hh-fcc/hardhat-fund-me-fcc/node_modules/@chainlink/contracts/src/v0.6/interfaces/AggregatorV2V3Interface.sol": {
       "lastModificationDate": 1692888705555,
       "contentHash": "6b76a24083942363411bb0b83ffeb997",
@@ -300,50 +344,6 @@
       ],
       "artifacts": [
         "AggregatorV3Interface"
-      ]
-    },
-    "/home/akira/development/blockchain/hh-fcc/hardhat-fund-me-fcc/node_modules/@chainlink/contracts/src/v0.6/tests/MockV3Aggregator.sol": {
-      "lastModificationDate": 1692888705615,
-      "contentHash": "b1f27d8f04303e8c78cd057685d883f6",
-      "sourceName": "@chainlink/contracts/src/v0.6/tests/MockV3Aggregator.sol",
-      "solcConfig": {
-        "version": "0.6.6",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata",
-                "devdoc",
-                "userdoc",
-                "storageLayout",
-                "evm.gasEstimates"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "metadata": {
-            "useLiteralContent": true
-          }
-        }
-      },
-      "imports": [
-        "../interfaces/AggregatorV2V3Interface.sol"
-      ],
-      "versionPragmas": [
-        "^0.6.0"
-      ],
-      "artifacts": [
-        "MockV3Aggregator"
       ]
     }
   }

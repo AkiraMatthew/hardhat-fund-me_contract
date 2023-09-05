@@ -8,8 +8,18 @@ import "solidity-coverage";
 import "hardhat-deploy";
 import "solidity-coverage";
 import { HardhatUserConfig } from "hardhat/config";
+import { NetworksUserConfig } from "hardhat/types";
 
-const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL || "https://eth-sepolia";
+// interface MyNetworksConfig extends NetworksUserConfig{
+//     blockConfirmations: string | number
+// }
+
+// interface MyConfig extends HardhatUserConfig {
+//     networks: MyNetworksConfig
+// }
+
+const SEPOLIA_RPC_URL =
+    process.env.SEPOLIA_RPC_URL || "https://rpc.sepolia.org";
 const PRIVATE_KEY = process.env.PRIVATE_KEY || "0xkey";
 const COINMARKETCAP_API_KEY = process.env.COINMARKETCAP_API_KEY;
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "key";
@@ -38,7 +48,7 @@ const config: HardhatUserConfig = {
         currency: "USD",
     },
     etherscan: {
-        apiKey: process.env.ETHERSCAN_API_KEY,
+        apiKey: ETHERSCAN_API_KEY,
     },
     namedAccounts: {
         deployer: {
