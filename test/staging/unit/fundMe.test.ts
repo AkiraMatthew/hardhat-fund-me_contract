@@ -1,10 +1,12 @@
 import { assert } from "chai";
-import { deployments, ethers, getNamedAccounts } from "hardhat";
+import { deployments, getNamedAccounts, ethers, network } from "hardhat";
+import { developmentChains } from "../../../helper-hardhat-config";
+import { FundMe, MockV3Aggregator } from "../../../typechain-types";
 
 describe("FundMe", async () => {
-    let fundMe: any;
+    let fundMe: FundMe;
     let deployer;
-    let mockV3Aggregator: any;
+    let mockV3Aggregator: MockV3Aggregator;
     beforeEach(async () => {
         // deploy our fundme contract
         // using hardhat deploy
@@ -25,6 +27,12 @@ describe("FundMe", async () => {
         it("set the aggegator addresses correctly", async () => {
             const response = await fundMe.priceFeed();
             assert.equal(response, mockV3Aggregator.address);
+        });
+    });
+
+    describe("fund", async () => {
+        it("Fails if you don't send enough ETH", async () => {
+            await fundMe.fund();
         });
     });
 });
