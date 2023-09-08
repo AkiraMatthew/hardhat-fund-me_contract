@@ -38,7 +38,7 @@ describe("FundMe", async () => {
             );
         });
         it("updated the amount funded data structure", async () => {
-            await fundMe.fund({ value: ethers.utils.parseEther("2") });
+            await fundMe.fund({ value: sendValue });
             const response = await fundMe.addressToAmountFunded(deployer);
             assert.equal(response.toString(), sendValue.toString());
         });
@@ -46,6 +46,46 @@ describe("FundMe", async () => {
             await fundMe.fund({ value: sendValue });
             const funder = await fundMe.funders(0);
             assert.equal(funder, deployer);
+        });
+    });
+
+    describe("withdraw", async () => {
+        // before we can even withdraw, we first want that the contract
+        // have some money in
+        beforeEach(async () => {
+            await fundMe.fund({ value: sendValue });
+        });
+
+        it("Withdraw ETH from a single founder", async () => {
+            //This is a way to think about writing test
+            // Arrange
+
+            /// Checking if it's really withdrawing ETH from
+            /// a single founder/
+            // Starting after being funded with some ETH
+            const startingFundMeBalance = await fundMe.provider.getBalance(
+                fundMe.address
+            );
+            const startingDeployerBalance = await fundMe.provider.getBalance(
+                deployer
+            );
+            // Act
+            const transactionResponse = await fundMe.withdraw();
+            const transactionReceipt = await transactionResponse.wait(1);
+
+            const endingFundMeBalance = await fundMe.provider.getBalance(
+                fundMe.address
+            );
+            //the deployer will spend a little bit of gas
+            const endingDeployerBalance = await fundMe.provider.getBalance(
+                deployer
+            );
+            // Assert
+            assert.equal(endingFundMeBalance, 0);
+            assert.equal(
+                startingFundMeBalance.add + startingDeployerBalance,
+                endingDeployerBalance.add(gasCost)
+            );
         });
     });
 });
