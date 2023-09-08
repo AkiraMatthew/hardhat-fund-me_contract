@@ -1,12 +1,13 @@
-import { assert } from "chai";
+import { assert, expect } from "chai";
 import { deployments, getNamedAccounts, ethers, network } from "hardhat";
 import { developmentChains } from "../../../helper-hardhat-config";
 import { FundMe, MockV3Aggregator } from "../../../typechain-types";
 
 describe("FundMe", async () => {
     let fundMe: FundMe;
-    let deployer;
+    let deployer: any;
     let mockV3Aggregator: MockV3Aggregator;
+    const sendValue = ethers.utils.parseEther("2"); //1eth
     beforeEach(async () => {
         // deploy our fundme contract
         // using hardhat deploy
@@ -32,7 +33,19 @@ describe("FundMe", async () => {
 
     describe("fund", async () => {
         it("Fails if you don't send enough ETH", async () => {
-            await fundMe.fund();
+            await expect(fundMe.fund()).to.be.revertedWith(
+                "You need to spend more ETH"
+            );
+        });
+        it("updated the amount funded data structure", async () => {
+            await fundMe.fund({ value: ethers.utils.parseEther("2") });
+            const response = await fundMe.addressToAmountFunded(deployer);
+            assert.equal(response.toString(), sendValue.toString());
+        });
+        it("Adds funder to array of funders", async () => {
+            await fundMe.fund({ value: sendValue });
+            const funder = await fundMe.funders(0);
+            assert.equal(funder, deployer);
         });
     });
 });
