@@ -3,18 +3,31 @@
 // Set a minimum value in USD
 
 // SPDX-License-Identifier: MIT
+// Pragma
 pragma solidity ^0.8.0;
 
+// Imports
 import "./PriceConverter.sol";
 
 // 1º 820, 652; 2º 799, 610; gas to deploy
 // Constant and Immutable keyword helps to bring gas down
 
-error NotOwner();
+// Errors Codes
+error FundMe__NotOwner();
 
+// Interfaces, Libraries, contracts
+
+/**
+ * @title A contract for crowdfunding
+ * @author Mateus Akira
+ * @notice This contract is to demo a simple funding contract
+ * @dev This implements priceFeeds as libraries
+ */
 contract FundMe {
+    // Type Declarations
     using PriceConverter for uint256;
 
+    //State variables
     //constant variables have different variable names
     uint256 public constant MINIMUM_USD = 50 * 1e18;
     // constant - 351 * 13000000000 = 4.563.000.000.000 = 0,00844155 usd
@@ -32,6 +45,30 @@ contract FundMe {
     // 444 gas immutable
     // 2,500 gas non-immutable
     AggregatorV3Interface public priceFeed;
+    modifier onlyOwner() {
+        // With custom error, it makes gas efficient:
+        if (msg.sender != i_owner) {
+            revert FundMe__NotOwner();
+        } // the revert keyword make the same as 'require()' but without the conditional beforehand
+        _;
+
+        // Another way to do, but without custom error:
+
+        // // To make only the contract owner to be able to withdraw:
+        // require(msg.sender == i_owner, "Sender is not the owner!");
+        // _; // the underscore represents doing the rest of the code.
+        // //if the underscore comes above the require, it would mean to do the code and after went through the entire code
+    }
+
+    // Functions Order:
+    //// constructor
+    //// receive
+    //// fallback
+    //// external
+    //// public
+    //// internal
+    //// private
+    //// view/pure
 
     constructor(address priceFeedAddress) {
         //whoever who deploys the contract
@@ -39,6 +76,18 @@ contract FundMe {
         priceFeed = AggregatorV3Interface(priceFeedAddress);
     }
 
+    /*receive() external payable {
+        fund();
+    }
+
+    fallback() external payable {
+        fund();
+    }*/
+
+    /**
+     * @notice This function funds this contract
+     * @dev This implements priceFeeds as libraries
+     */
     // Limit tinkering / triaging to 20 minutes to 20 min
     // Take at least 15min or be 100% sure
     function fund() public payable {
@@ -99,28 +148,5 @@ contract FundMe {
         require(callSuccess, "Call failed");
     }
 
-    modifier onlyOwner() {
-        // With custom error, it makes gas efficient:
-        if (msg.sender != i_owner) {
-            revert NotOwner();
-        } // the revert keyword make the same as 'require()' but without the conditional beforehand
-        _;
-
-        // Another way to do, but without custom error:
-
-        // // To make only the contract owner to be able to withdraw:
-        // require(msg.sender == i_owner, "Sender is not the owner!");
-        // _; // the underscore represents doing the rest of the code.
-        // //if the underscore comes above the require, it would mean to do the code and after went through the entire code
-    }
-
     // What happens if someone send this contract ETH without calling the fund function
-
-    receive() external payable {
-        fund();
-    }
-
-    fallback() external payable {
-        fund();
-    }
 }
