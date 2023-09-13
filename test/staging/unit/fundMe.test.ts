@@ -7,7 +7,7 @@ describe("FundMe", async () => {
     let fundMe: FundMe;
     let deployer: any;
     let mockV3Aggregator: MockV3Aggregator;
-    const sendValue = ethers.utils.parseEther("2"); //1eth
+    const sendValue = ethers.utils.parseEther("25"); //1eth
     beforeEach(async () => {
         // deploy our fundme contract
         // using hardhat deploy
@@ -72,6 +72,9 @@ describe("FundMe", async () => {
             // Act
             const transactionResponse = await fundMe.withdraw();
             const transactionReceipt = await transactionResponse.wait(1);
+            const { gasUsed, effectiveGasPrice } = transactionReceipt;
+            // we use .add to add the big numbers
+            const gasCost = gasUsed.mul(effectiveGasPrice);
 
             const endingFundMeBalance = await fundMe.provider.getBalance(
                 fundMe.address
@@ -82,9 +85,10 @@ describe("FundMe", async () => {
             );
             // Assert
             assert.equal(endingFundMeBalance, 0);
+            // we use .add to add the big numbers
             assert.equal(
-                startingFundMeBalance.add + startingDeployerBalance,
-                endingDeployerBalance.add(gasCost)
+                startingFundMeBalance.add(startingDeployerBalance).toString(),
+                endingDeployerBalance.add(gasCost).toString()
             );
         });
     });
