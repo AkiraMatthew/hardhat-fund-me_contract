@@ -1,10 +1,16 @@
 {
   "name": "hardhat-fund-me-fcc",
+  "author": "Akira",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx hardhat test",
+    "test:staging": "npx hardhat test --network sepolia",
+    "lint": "npx solhint 'contracts/*.sol'",
+    "lint:fix": "npx solhint 'contracs/*sol' --fix",
+    "prettier": "npx prettier --write .",
+    "coverage": "npx hardhat coverage"
   },
   "keywords": [],
   "author": "",
