@@ -177,6 +177,7 @@ contract FundMe {
 
     // What happens if someone send this contract ETH without calling the fund function
 
+    // View/pure
     /**
      * @notice We will make some getter functions in order to make
      * easier to anyone that interacts with our API to read the variables
