@@ -152,5 +152,28 @@ contract FundMe {
         require(callSuccess, "Call failed");
     }
 
+    /**
+     * @notice instead of always keep reading from storage, what
+     * we gonna do is read the entire array into memore, 1 time.
+     * And then read from memory instead from constantly read from
+     * storage.
+     */
+    function cheaperWithdraw() public payable onlyOwner {
+        address[] memory funders = s_funders;
+        // mapping can't be in memory
+        for (
+            uint256 funderIndex = 0;
+            funderIndex < funders.length;
+            funderIndex++
+        ) {
+            address funder = funders[funderIndex];
+            // reseting the funders mapping
+            s_addressToAmountFunded[funder] = 0;
+        }
+        s_funders = new address[](0);
+        (bool success, ) = i_owner.call{value: address(this).balance}("");
+        require(success);
+    }
+
     // What happens if someone send this contract ETH without calling the fund function
 }
