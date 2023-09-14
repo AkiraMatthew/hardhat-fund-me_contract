@@ -29,7 +29,7 @@ contract FundMe {
 
     //State variables
     //constant variables have different variable names
-    uint256 public constant MINIMUM_USD = 50 * 1e18;
+    uint256 public constant MINIMUM_USD = 50 * 10 ** 18;
     // constant - 351 * 13000000000 = 4.563.000.000.000 = 0,00844155 usd
     // non-constant 2451 * 13000000000 = 34314000000000 = 0,06 usd
 

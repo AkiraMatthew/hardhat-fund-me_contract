@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/home/akira/development/blockchain/hh-fcc/hardhat-fund-me-fcc/contracts/FundMe.sol": {
-      "lastModificationDate": 1694012365459,
-      "contentHash": "a639bb7da574a9b2153b6646d79d4be1",
+      "lastModificationDate": 1694652321801,
+      "contentHash": "4651bcccd60fe517f7b88fc76598e75b",
       "sourceName": "contracts/FundMe.sol",
       "solcConfig": {
         "version": "0.8.8",
