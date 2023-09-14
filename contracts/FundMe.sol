@@ -21,6 +21,10 @@ error FundMe__NotOwner();
  * @title A contract for crowdfunding
  * @author Mateus Akira
  * @notice This contract is to demo a simple funding contract
+ * @notice "s_" means that it's a storage variable, which consumes
+ * a lot of gas.
+ * @notice "i_" is a good practice for immutable variables
+ * @notice for constant variables, we use CAPSLOCK
  * @dev This implements priceFeeds as libraries
  */
 contract FundMe {
@@ -33,9 +37,9 @@ contract FundMe {
     // constant - 351 * 13000000000 = 4.563.000.000.000 = 0,00844155 usd
     // non-constant 2451 * 13000000000 = 34314000000000 = 0,06 usd
 
-    address[] public funders;
+    address[] public s_funders;
     // we map the addresses to know how much each address has send to the contract;
-    mapping(address => uint256) public addressToAmountFunded;
+    mapping(address => uint256) public s_addressToAmountFunded;
 
     // to make only the contract owner able to call the withdrwa function, we need to create teh following:
     // variables that are set 1 time but outside of the line where they're declared
@@ -44,7 +48,7 @@ contract FundMe {
 
     // 444 gas immutable
     // 2,500 gas non-immutable
-    AggregatorV3Interface public priceFeed;
+    AggregatorV3Interface public s_priceFeed;
     modifier onlyOwner() {
         // With custom error, it makes gas efficient:
         if (msg.sender != i_owner) {
@@ -73,7 +77,7 @@ contract FundMe {
     constructor(address priceFeedAddress) {
         //whoever who deploys the contract
         i_owner = msg.sender;
-        priceFeed = AggregatorV3Interface(priceFeedAddress);
+        s_priceFeed = AggregatorV3Interface(priceFeedAddress);
     }
 
     /*receive() external payable {
@@ -100,30 +104,30 @@ contract FundMe {
         // msg.value is the first parameter to be considered by a library
         // so when using a library, insted of using getConversionRate(msg.value) we use msg.value.getConversionRate();
         require(
-            msg.value.getConversionRate(priceFeed) >= MINIMUM_USD,
+            msg.value.getConversionRate(s_priceFeed) >= MINIMUM_USD,
             "You need to spend more ETH"
         );
-        funders.push(msg.sender); // -> sender is the address of however calls the function
+        s_funders.push(msg.sender); // -> sender is the address of however calls the function
         //here we can see
-        addressToAmountFunded[msg.sender] += msg.value;
+        s_addressToAmountFunded[msg.sender] += msg.value;
     }
 
     function withdraw() public onlyOwner {
-        // When we withdraw the funds we also want to reset the funders array
+        // When we withdraw the funds we also want to reset the s_funders array
         // for(starting index, ending index, step amount)
         for (
             uint256 funderIndex = 0;
-            funderIndex < funders.length;
+            funderIndex < s_funders.length;
             funderIndex++
         ) {
             //code
-            address funder = funders[funderIndex];
+            address funder = s_funders[funderIndex];
             // Here we reset the counter of the amount funded by the funder
-            addressToAmountFunded[funder] = 0;
+            s_addressToAmountFunded[funder] = 0;
         }
-        // we need to reset the funders array
+        // we need to reset the s_funders array
         // instead of looping through the array and deleting objects, we can just do:
-        funders = new address[](0); // that means we will start a new array with 0 elements inside of it.
+        s_funders = new address[](0); // that means we will start a new array with 0 elements inside of it.
         // we need to actually withdraw the funds
 
         // There are 3 different ways to send ETH from a contract to somewhere else
@@ -146,6 +150,29 @@ contract FundMe {
         (bool callSuccess /*bytes memory dataReturned*/, ) = payable(msg.sender)
             .call{value: address(this).balance}("");
         require(callSuccess, "Call failed");
+    }
+
+    /**
+     * @notice instead of always keep reading from storage, what
+     * we gonna do is read the entire array into memore, 1 time.
+     * And then read from memory instead from constantly read from
+     * storage.
+     */
+    function cheaperWithdraw() public payable onlyOwner {
+        address[] memory funders = s_funders;
+        // mapping can't be in memory
+        for (
+            uint256 funderIndex = 0;
+            funderIndex < funders.length;
+            funderIndex++
+        ) {
+            address funder = funders[funderIndex];
+            // reseting the funders mapping
+            s_addressToAmountFunded[funder] = 0;
+        }
+        s_funders = new address[](0);
+        (bool success, ) = i_owner.call{value: address(this).balance}("");
+        require(success);
     }
 
     // What happens if someone send this contract ETH without calling the fund function
