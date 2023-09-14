@@ -37,14 +37,14 @@ contract FundMe {
     // constant - 351 * 13000000000 = 4.563.000.000.000 = 0,00844155 usd
     // non-constant 2451 * 13000000000 = 34314000000000 = 0,06 usd
 
-    address[] public s_funders;
+    address[] private s_funders;
     // we map the addresses to know how much each address has send to the contract;
     mapping(address => uint256) public s_addressToAmountFunded;
 
     // to make only the contract owner able to call the withdrwa function, we need to create teh following:
     // variables that are set 1 time but outside of the line where they're declared
     // we can mark as immutable
-    address public immutable i_owner; // instead of calling owner, a good convention is using 'i_'
+    address private immutable i_owner; // instead of calling owner, a good convention is using 'i_'
 
     // 444 gas immutable
     // 2,500 gas non-immutable
@@ -176,4 +176,27 @@ contract FundMe {
     }
 
     // What happens if someone send this contract ETH without calling the fund function
+
+    /**
+     * @notice We will make some getter functions in order to make
+     * easier to anyone that interacts with our API to read the variables
+     * because calling 'i_' ir 's_' is a bit strange for using the variables
+     */
+    function getOwner() public view returns (address) {
+        return i_owner;
+    }
+
+    function getFunder(uint256 index) public view returns (address) {
+        return s_funders[index];
+    }
+
+    function getAddressToAmountFunded(
+        address funder
+    ) public view returns (uint256) {
+        return s_addressToAmountFunded[funder];
+    }
+
+    function getPriceFeed() public view returns (AggregatorV3Interface) {
+        return s_priceFeed;
+    }
 }
