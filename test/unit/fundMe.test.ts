@@ -1,7 +1,7 @@
 import { assert, expect } from "chai";
 import { deployments, getNamedAccounts, ethers, network } from "hardhat";
-import { developmentChains } from "../../../helper-hardhat-config";
-import { FundMe, MockV3Aggregator } from "../../../typechain-types";
+import { developmentChains } from "../../helper-hardhat-config";
+import { FundMe, MockV3Aggregator } from "../../typechain-types";
 
 describe("FundMe", async () => {
     let fundMe: FundMe;
@@ -90,6 +90,68 @@ describe("FundMe", async () => {
                 startingFundMeBalance.add(startingDeployerBalance).toString(),
                 endingDeployerBalance.add(gasCost).toString()
             );
+        });
+        it("allows us to withdraw with multiple funders", async () => {
+            // Arrange
+            // we need to connect to these different accounts
+            // because the default account is the deployer
+            const accounts = await ethers.getSigners();
+            for (let i = 1; i < 6; i++) {
+                const fundMeConnectedContract = await fundMe.connect(
+                    accounts[i]
+                );
+                await fundMeConnectedContract.fund({ value: sendValue });
+            }
+            const startingFundMeBalance = await fundMe.provider.getBalance(
+                fundMe.address
+            );
+            const startingDeployerBalance = await fundMe.provider.getBalance(
+                deployer
+            );
+
+            // Act
+            const transactionResponse = await fundMe.withdraw();
+            const transactionReceipt = await transactionResponse.wait(1);
+            const { gasUsed, effectiveGasPrice } = transactionReceipt;
+            const gasCost = gasUsed.mul(effectiveGasPrice);
+
+            //Assert
+            const endingFundMeBalance = await fundMe.provider.getBalance(
+                fundMe.address
+            );
+            //the deployer will spend a little bit of gas
+            const endingDeployerBalance = await fundMe.provider.getBalance(
+                deployer
+            );
+            // Assert
+            assert.equal(endingFundMeBalance, 0);
+            // we use .add to add the big numbers
+            assert.equal(
+                startingFundMeBalance.add(startingDeployerBalance).toString(),
+                endingDeployerBalance.add(gasCost).toString()
+            );
+
+            // Make sure that the funders are reset properly
+            await expect(fundMe.funders(0)).to.be.reverted;
+
+            // looping throught all accounts and making sure that all the
+            // mapping amounts are 0
+            for (let i = 1; i < 6; i++) {
+                assert.equal(
+                    await fundMe.addressToAmountFunded(accounts[1].address),
+                    0
+                );
+            }
+        });
+
+        // Adding modifiers to only allow the owner to withdraw
+        it("Only allows the owner to withdraw", async () => {
+            const accounts = await ethers.getSigners();
+            const attacker = accounts[1];
+            const attackerConnectedContract = await fundMe.connect(attacker);
+            await expect(
+                attackerConnectedContract.withdraw()
+            ).to.be.revertedWith("FundMe__NotOwner");
         });
     });
 });
